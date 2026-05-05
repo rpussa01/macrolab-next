@@ -1,29 +1,37 @@
+import "dotenv/config"
 import { PrismaClient } from "@prisma/client"
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"
-import path from "node:path"
+import { PrismaPg } from "@prisma/adapter-pg"
 
-const dbPath = path.join(process.cwd(), "prisma", "dev.db")
-
-const adapter = new PrismaBetterSqlite3({
-  url: `file:${dbPath}`,
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
 })
 
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
+  await prisma.recipe.deleteMany()
+
   await prisma.recipe.create({
     data: {
-      title: "Chocolate Lava Cake",
-      description: "High-protein molten chocolate lava cake",
-      ingredients: "1 egg, 20g cocoa powder, 80g Greek yogurt, 20g almond flour, 10g dark chocolate",
-      method: "Mix ingredients, add chocolate centre, bake at 180°C for 8–10 minutes.",
-      image: "/images/chocolate-lava.png"
+      title: "Chocolate Lava Protein Cake",
+      description:
+        "A macro-friendly chocolate dessert built for cutting, content, and clean high-protein cravings.",
+      ingredients:
+        "1 egg, cocoa powder, Greek yogurt, almond flour, dark chocolate",
+      method:
+        "Mix ingredients, add chocolate centre, bake at 180°C for 8–10 minutes.",
+      image: "/images/chocolate-lava.png",
     },
   })
+
+  console.log("Seed completed")
 }
 
 main()
-  .catch(console.error)
+  .catch((e) => {
+    console.error(e)
+    process.exit(1)
+  })
   .finally(async () => {
     await prisma.$disconnect()
   })

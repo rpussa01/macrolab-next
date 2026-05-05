@@ -1,9 +1,11 @@
 -- CreateTable
 CREATE TABLE "Recipe" (
-    "id" INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    "id" SERIAL NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT,
     "ingredients" TEXT NOT NULL,
     "method" TEXT NOT NULL,
-    "image" TEXT
+    "image" TEXT,
+
+    CONSTRAINT "Recipe_pkey" PRIMARY KEY ("id")
 );
