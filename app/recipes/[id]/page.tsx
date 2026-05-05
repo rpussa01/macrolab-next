@@ -26,16 +26,72 @@ export default async function RecipePage({ params }: Props) {
   }
 
   return (
-    <main className="p-10 max-w-3xl mx-auto">
-      <h1 className="text-4xl font-bold mb-4">{recipe.title}</h1>
-      <p className="text-gray-600 mb-6">{recipe.description}</p>
+  <main className="bg-[#eef2f4] min-h-screen px-6 py-12">
+    <div className="max-w-5xl mx-auto">
 
-      <h2 className="text-2xl font-bold mt-6 mb-2">Ingredients</h2>
-      <p className="whitespace-pre-line">{recipe.ingredients}</p>
+      {/* HERO IMAGE */}
+      {recipe.image && (
+        <div className="relative h-[400px] w-full overflow-hidden rounded-[2rem] shadow-xl">
+          <img
+            src={recipe.image}
+            alt={recipe.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/30" />
+        </div>
+      )}
 
-      <h2 className="text-2xl font-bold mt-6 mb-2">Method</h2>
-      <p className="whitespace-pre-line">{recipe.method}</p>
-      <p>ID: {String(recipe.id)}</p>
-    </main>
-  )
+      {/* TITLE */}
+      <h1 className="mt-8 text-5xl font-black tracking-tight">
+        {recipe.title}
+      </h1>
+
+      {/* DESCRIPTION */}
+      <p className="mt-4 text-lg text-black/60 max-w-2xl">
+        {recipe.description}
+      </p>
+
+      {/* MACROS */}
+      <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-2xl shadow">
+          <p className="text-2xl font-bold">260</p>
+          <span className="text-sm text-gray-500">kcal</span>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow">
+          <p className="text-2xl font-bold">30g</p>
+          <span className="text-sm text-gray-500">protein</span>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow">
+          <p className="text-2xl font-bold">18g</p>
+          <span className="text-sm text-gray-500">carbs</span>
+        </div>
+        <div className="bg-white p-5 rounded-2xl shadow">
+          <p className="text-2xl font-bold">7g</p>
+          <span className="text-sm text-gray-500">fat</span>
+        </div>
+      </div>
+
+      {/* CONTENT */}
+      <div className="mt-12 grid md:grid-cols-2 gap-10">
+
+        {/* INGREDIENTS */}
+        <div className="bg-white p-8 rounded-2xl shadow">
+          <h2 className="text-2xl font-black mb-4">Ingredients</h2>
+          <p className="whitespace-pre-line text-black/70 leading-relaxed">
+            {recipe.ingredients}
+          </p>
+        </div>
+
+        {/* METHOD */}
+        <div className="bg-white p-8 rounded-2xl shadow">
+          <h2 className="text-2xl font-black mb-4">Method</h2>
+          <p className="whitespace-pre-line text-black/70 leading-relaxed">
+            {recipe.method}
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </main>
+)
 }

@@ -26,15 +26,15 @@ export default async function MacroLabHome() {
           </Link>
         </aside>
 
-        <section className="relative z-20 mx-auto grid min-h-[calc(100vh-140px)] max-w-7xl place-items-center px-6 pb-20 text-center">
+        <section className="relative z-20 mx-auto grid min-h-[calc(100vh-140px)] max-w-7xl place-items-center px-6 pb-20 pt-12 md:pt-16 text-center">
           <div className="relative w-full">
-            <h2 className="relative z-10 text-[18vw] font-black uppercase leading-[0.75] tracking-[-0.08em] text-[#08789b] drop-shadow-[8px_10px_0_rgba(0,0,0,0.12)] md:text-[9rem] lg:text-[11rem]">
+            <h2 className="relative z-10 mb-6 text-[18vw] font-black uppercase leading-[0.75] tracking-[-0.08em] text-[#08789b] drop-shadow-[4px_6px_0_rgba(0,0,0,0.1)] md:mb-10 md:text-[9rem] lg:text-[11rem]">
               Healthy Pro
             </h2>
 
             <div className="absolute left-1/2 top-[48%] h-[430px] w-[430px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#cdd3da] md:h-[560px] md:w-[560px]" />
 
-            <div className="relative z-20 mx-auto -mt-8 flex h-[430px] w-[280px] flex-col items-center justify-end rounded-[2.5rem] bg-gradient-to-b from-[#111] via-[#111] to-[#050505] shadow-[0_35px_80px_rgba(0,0,0,0.35)] md:-mt-16 md:h-[520px] md:w-[340px]">
+            <div className="relative z-20 mx-auto mt-10 flex h-[430px] w-[280px] flex-col items-center justify-end rounded-[2.5rem] bg-gradient-to-b from-[#111] via-[#111] to-[#050505] shadow-[0_35px_80px_rgba(0,0,0,0.35)] md:mt-16 md:h-[520px] md:w-[340px]">
               <div className="absolute -top-8 h-20 w-[92%] rounded-b-xl rounded-t-3xl bg-[#111] shadow-xl">
                 <div className="mt-3 h-4 w-full bg-white/10" />
                 <div className="mt-3 h-3 w-full bg-white/10" />
