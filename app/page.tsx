@@ -134,19 +134,19 @@ export default async function MacroLabHome() {
 
                 <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">260</strong>
+                    <strong className="text-2xl">{featuredRecipe.calories}</strong>
                     <p className="text-sm text-black/50">kcal</p>
                   </div>
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">30g</strong>
+                    <strong className="text-2xl">{featuredRecipe.protein}g</strong>
                     <p className="text-sm text-black/50">protein</p>
                   </div>
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">18g</strong>
+                    <strong className="text-2xl">{featuredRecipe.carbs}g</strong>
                     <p className="text-sm text-black/50">carbs</p>
                   </div>
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">7g</strong>
+                    <strong className="text-2xl">{featuredRecipe.fat}g</strong>
                     <p className="text-sm text-black/50">fat</p>
                   </div>
                 </div>

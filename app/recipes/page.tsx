@@ -65,19 +65,19 @@ export default async function RecipesPage() {
 
                 <div className="mt-6 grid grid-cols-4 gap-2 text-center">
                   <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>260</strong>
+                    <strong>{recipe.calories}</strong>
                     <p className="text-xs text-black/50">kcal</p>
                   </div>
                   <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>30g</strong>
+                    <strong>{recipe.protein}</strong>
                     <p className="text-xs text-black/50">pro</p>
                   </div>
                   <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>18g</strong>
+                    <strong>{recipe.carbs}</strong>
                     <p className="text-xs text-black/50">carb</p>
                   </div>
                   <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>7g</strong>
+                    <strong>{recipe.fat}</strong>
                     <p className="text-xs text-black/50">fat</p>
                   </div>
                 </div>

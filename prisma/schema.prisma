@@ -13,4 +13,8 @@ model Recipe {
   ingredients String
   method      String
   image       String?
+  calories Int?
+protein  Int?
+carbs    Int?
+fat      Int?
 }

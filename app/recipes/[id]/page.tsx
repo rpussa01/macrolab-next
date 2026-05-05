@@ -1,13 +1,13 @@
 import { prisma } from "../../../lib/prisma"
+import Image from "next/image"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 
-type Props = {
-  params: Promise<{
-    id: string
-  }>
-}
-
-export default async function RecipePage({ params }: Props) {
+export default async function RecipePage({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
   const { id } = await params
   const recipeId = Number(id)
 
@@ -26,72 +26,92 @@ export default async function RecipePage({ params }: Props) {
   }
 
   return (
-  <main className="bg-[#eef2f4] min-h-screen px-6 py-12">
-    <div className="max-w-5xl mx-auto">
+    <main className="min-h-screen bg-[#eef2f4] px-6 py-12 text-[#101010]">
+      <div className="mx-auto max-w-6xl">
+        <Link
+          href="/recipes"
+          className="mb-8 inline-flex text-sm font-black uppercase tracking-[0.18em] text-[#08789b]"
+        >
+          ← Back to recipes
+        </Link>
 
-      {/* HERO IMAGE */}
-      {recipe.image && (
-        <div className="relative h-[400px] w-full overflow-hidden rounded-[2rem] shadow-xl">
-          <img
-            src={recipe.image}
-            alt={recipe.title}
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/30" />
-        </div>
-      )}
+        {recipe.image && (
+          <div className="relative h-[420px] w-full overflow-hidden rounded-[2.5rem] bg-black shadow-2xl">
+            <Image
+              src={recipe.image}
+              alt={recipe.title}
+              fill
+              className="object-cover"
+              priority
+            />
+            <div className="absolute inset-0 bg-black/25" />
+          </div>
+        )}
 
-      {/* TITLE */}
-      <h1 className="mt-8 text-5xl font-black tracking-tight">
-        {recipe.title}
-      </h1>
-
-      {/* DESCRIPTION */}
-      <p className="mt-4 text-lg text-black/60 max-w-2xl">
-        {recipe.description}
-      </p>
-
-      {/* MACROS */}
-      <div className="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white p-5 rounded-2xl shadow">
-          <p className="text-2xl font-bold">260</p>
-          <span className="text-sm text-gray-500">kcal</span>
-        </div>
-        <div className="bg-white p-5 rounded-2xl shadow">
-          <p className="text-2xl font-bold">30g</p>
-          <span className="text-sm text-gray-500">protein</span>
-        </div>
-        <div className="bg-white p-5 rounded-2xl shadow">
-          <p className="text-2xl font-bold">18g</p>
-          <span className="text-sm text-gray-500">carbs</span>
-        </div>
-        <div className="bg-white p-5 rounded-2xl shadow">
-          <p className="text-2xl font-bold">7g</p>
-          <span className="text-sm text-gray-500">fat</span>
-        </div>
-      </div>
-
-      {/* CONTENT */}
-      <div className="mt-12 grid md:grid-cols-2 gap-10">
-
-        {/* INGREDIENTS */}
-        <div className="bg-white p-8 rounded-2xl shadow">
-          <h2 className="text-2xl font-black mb-4">Ingredients</h2>
-          <p className="whitespace-pre-line text-black/70 leading-relaxed">
-            {recipe.ingredients}
+        <section className="mt-10">
+          <p className="text-xs font-black uppercase tracking-[0.28em] text-[#08789b]">
+            MacroLab Recipe
           </p>
-        </div>
 
-        {/* METHOD */}
-        <div className="bg-white p-8 rounded-2xl shadow">
-          <h2 className="text-2xl font-black mb-4">Method</h2>
-          <p className="whitespace-pre-line text-black/70 leading-relaxed">
-            {recipe.method}
+          <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-7xl">
+            {recipe.title}
+          </h1>
+
+          <p className="mt-5 max-w-3xl text-lg leading-relaxed text-black/60">
+            {recipe.description}
           </p>
-        </div>
+        </section>
 
+        <section className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
+          <div className="rounded-2xl bg-white p-6 text-center shadow-lg">
+            <strong className="text-3xl">{recipe.calories ?? "-"}</strong>
+            <p className="mt-1 text-sm text-black/50">kcal</p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 text-center shadow-lg">
+            <strong className="text-3xl">
+              {recipe.protein ? `${recipe.protein}g` : "-"}
+            </strong>
+            <p className="mt-1 text-sm text-black/50">protein</p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 text-center shadow-lg">
+            <strong className="text-3xl">
+              {recipe.carbs ? `${recipe.carbs}g` : "-"}
+            </strong>
+            <p className="mt-1 text-sm text-black/50">carbs</p>
+          </div>
+
+          <div className="rounded-2xl bg-white p-6 text-center shadow-lg">
+            <strong className="text-3xl">
+              {recipe.fat ? `${recipe.fat}g` : "-"}
+            </strong>
+            <p className="mt-1 text-sm text-black/50">fat</p>
+          </div>
+        </section>
+
+        <section className="mt-12 grid gap-8 md:grid-cols-2">
+          <div className="rounded-[2rem] bg-white p-8 shadow-xl">
+            <h2 className="text-3xl font-black tracking-[-0.04em]">
+              Ingredients
+            </h2>
+
+            <p className="mt-5 whitespace-pre-line text-base leading-8 text-black/70">
+              {recipe.ingredients}
+            </p>
+          </div>
+
+          <div className="rounded-[2rem] bg-white p-8 shadow-xl">
+            <h2 className="text-3xl font-black tracking-[-0.04em]">
+              Method
+            </h2>
+
+            <p className="mt-5 whitespace-pre-line text-base leading-8 text-black/70">
+              {recipe.method}
+            </p>
+          </div>
+        </section>
       </div>
-    </div>
-  </main>
-)
+    </main>
+  )
 }
