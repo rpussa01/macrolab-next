@@ -1,8 +1,26 @@
 import { prisma } from "../../lib/prisma"
 import { redirect } from "next/navigation"
+import { writeFile } from "fs/promises"
+import path from "path"
 
 async function addRecipe(formData: FormData) {
   "use server"
+
+  const imageFile = formData.get("image") as File
+
+  let imagePath = ""
+
+  if (imageFile && imageFile.size > 0) {
+    const bytes = await imageFile.arrayBuffer()
+    const buffer = Buffer.from(bytes)
+
+    const fileName = `${Date.now()}-${imageFile.name.replaceAll(" ", "-")}`
+    const uploadPath = path.join(process.cwd(), "public", "images", fileName)
+
+    await writeFile(uploadPath, buffer)
+
+    imagePath = `/images/${fileName}`
+  }
 
   await prisma.recipe.create({
     data: {
@@ -10,7 +28,7 @@ async function addRecipe(formData: FormData) {
       description: String(formData.get("description")),
       ingredients: String(formData.get("ingredients")),
       method: String(formData.get("method")),
-      image: String(formData.get("image")),
+      image: imagePath,
       calories: Number(formData.get("calories")),
       protein: Number(formData.get("protein")),
       carbs: Number(formData.get("carbs")),
@@ -66,35 +84,16 @@ export default function AddRecipePage() {
 
           <input
             name="image"
-            placeholder="/images/beef-bowl.png"
+            type="file"
+            accept="image/*"
             className="rounded-xl border p-4"
           />
 
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <input
-              name="calories"
-              type="number"
-              placeholder="Calories"
-              className="rounded-xl border p-4"
-            />
-            <input
-              name="protein"
-              type="number"
-              placeholder="Protein"
-              className="rounded-xl border p-4"
-            />
-            <input
-              name="carbs"
-              type="number"
-              placeholder="Carbs"
-              className="rounded-xl border p-4"
-            />
-            <input
-              name="fat"
-              type="number"
-              placeholder="Fat"
-              className="rounded-xl border p-4"
-            />
+            <input name="calories" type="number" placeholder="Calories" className="rounded-xl border p-4" />
+            <input name="protein" type="number" placeholder="Protein" className="rounded-xl border p-4" />
+            <input name="carbs" type="number" placeholder="Carbs" className="rounded-xl border p-4" />
+            <input name="fat" type="number" placeholder="Fat" className="rounded-xl border p-4" />
           </div>
 
           <button
