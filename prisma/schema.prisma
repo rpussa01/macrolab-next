@@ -14,7 +14,7 @@ model Recipe {
   method      String
   image       String?
   calories Int?
-protein  Int?
-carbs    Int?
-fat      Int?
+  protein  Int?
+  carbs    Int?
+  fat      Int?
 }

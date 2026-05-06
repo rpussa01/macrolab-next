@@ -30,6 +30,9 @@ export default function Navbar() {
           <Link className="transition hover:text-[#08789b]" href="/#about">
             About
           </Link>
+          <Link className="transition hover:text-[#08789b]" href="/order">
+            Order
+          </Link>
         </div>
 
         {/* MOBILE BUTTON */}
@@ -53,6 +56,9 @@ export default function Navbar() {
             </Link>
             <Link href="/#about" onClick={() => setOpen(false)}>
               About
+            </Link>
+            <Link href="/Order" onClick={() => setOpen(false)}>
+              Order
             </Link>
           </div>
         </div>
