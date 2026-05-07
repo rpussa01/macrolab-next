@@ -1,6 +1,9 @@
 import { prisma } from "../../lib/prisma"
 import { redirect } from "next/navigation"
+import { cookies } from "next/headers"
 import { v2 as cloudinary } from "cloudinary"
+
+export const dynamic = "force-dynamic"
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -17,11 +20,14 @@ async function uploadImage(file: File): Promise<string> {
       .upload_stream(
         {
           folder: "macrolab-recipes",
-          resource_type: "image",
         },
         (error, result) => {
-          if (error) reject(error)
-          else resolve(result?.secure_url || "")
+          if (error) {
+            reject(error)
+            return
+          }
+
+          resolve(result?.secure_url || "")
         }
       )
       .end(buffer)
@@ -40,22 +46,29 @@ async function addRecipe(formData: FormData) {
 
   await prisma.recipe.create({
     data: {
-      title: String(formData.get("title")),
-      description: String(formData.get("description")),
-      ingredients: String(formData.get("ingredients")),
-      method: String(formData.get("method")),
+      title: String(formData.get("title") || ""),
+      description: String(formData.get("description") || ""),
+      ingredients: String(formData.get("ingredients") || ""),
+      method: String(formData.get("method") || ""),
       image: imageUrl,
-      calories: Number(formData.get("calories")),
-      protein: Number(formData.get("protein")),
-      carbs: Number(formData.get("carbs")),
-      fat: Number(formData.get("fat")),
+      calories: Number(formData.get("calories") || 0),
+      protein: Number(formData.get("protein") || 0),
+      carbs: Number(formData.get("carbs") || 0),
+      fat: Number(formData.get("fat") || 0),
     },
   })
 
-  redirect("/recipes")
+  redirect("/manage-recipe")
 }
 
-export default function AddRecipePage() {
+export default async function AddRecipePage() {
+  const cookieStore = await cookies()
+  const isAdmin = cookieStore.get("admin-auth")?.value === "true"
+
+  if (!isAdmin) {
+    redirect("/admin-login")
+  }
+
   return (
     <main className="min-h-screen bg-[#eef2f4] px-6 py-16">
       <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-8 shadow-xl">
@@ -87,7 +100,7 @@ export default function AddRecipePage() {
 
           <button
             type="submit"
-            className="mt-4 rounded-full bg-[#08789b] px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-white"
+            className="rounded-full bg-[#08789b] px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-white"
           >
             Save Recipe
           </button>

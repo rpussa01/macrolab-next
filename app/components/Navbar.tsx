@@ -33,6 +33,9 @@ export default function Navbar() {
           <Link className="transition hover:text-[#08789b]" href="/order">
             Order
           </Link>
+          <Link className="transition hover:text-[#08789b]" href="/admin-login">
+            Admin Login
+          </Link>
         </div>
 
         {/* MOBILE BUTTON */}
@@ -59,6 +62,9 @@ export default function Navbar() {
             </Link>
             <Link href="/order" onClick={() => setOpen(false)}>
               Order
+            </Link>
+            <Link href="/admin-login" onClick={() => setOpen(false)}>
+              Admin Login
             </Link>
           </div>
         </div>
