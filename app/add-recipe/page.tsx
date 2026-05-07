@@ -1,25 +1,41 @@
 import { prisma } from "../../lib/prisma"
 import { redirect } from "next/navigation"
-import { writeFile } from "fs/promises"
-import path from "path"
+import { v2 as cloudinary } from "cloudinary"
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+})
+
+async function uploadImage(file: File): Promise<string> {
+  const bytes = await file.arrayBuffer()
+  const buffer = Buffer.from(bytes)
+
+  return new Promise((resolve, reject) => {
+    cloudinary.uploader
+      .upload_stream(
+        {
+          folder: "macrolab-recipes",
+          resource_type: "image",
+        },
+        (error, result) => {
+          if (error) reject(error)
+          else resolve(result?.secure_url || "")
+        }
+      )
+      .end(buffer)
+  })
+}
 
 async function addRecipe(formData: FormData) {
   "use server"
 
   const imageFile = formData.get("image") as File
-
-  let imagePath = ""
+  let imageUrl = ""
 
   if (imageFile && imageFile.size > 0) {
-    const bytes = await imageFile.arrayBuffer()
-    const buffer = Buffer.from(bytes)
-
-    const fileName = `${Date.now()}-${imageFile.name.replaceAll(" ", "-")}`
-    const uploadPath = path.join(process.cwd(), "public", "images", fileName)
-
-    await writeFile(uploadPath, buffer)
-
-    imagePath = `/images/${fileName}`
+    imageUrl = await uploadImage(imageFile)
   }
 
   await prisma.recipe.create({
@@ -28,7 +44,7 @@ async function addRecipe(formData: FormData) {
       description: String(formData.get("description")),
       ingredients: String(formData.get("ingredients")),
       method: String(formData.get("method")),
-      image: imagePath,
+      image: imageUrl,
       calories: Number(formData.get("calories")),
       protein: Number(formData.get("protein")),
       carbs: Number(formData.get("carbs")),
@@ -52,42 +68,15 @@ export default function AddRecipePage() {
         </h1>
 
         <form action={addRecipe} className="mt-10 grid gap-5">
-          <input
-            name="title"
-            placeholder="Recipe title"
-            required
-            className="rounded-xl border p-4"
-          />
+          <input name="title" required placeholder="Recipe title" className="rounded-xl border p-4" />
 
-          <textarea
-            name="description"
-            placeholder="Short description"
-            required
-            className="rounded-xl border p-4"
-          />
+          <textarea name="description" required placeholder="Short description" className="rounded-xl border p-4" />
 
-          <textarea
-            name="ingredients"
-            placeholder="Ingredients"
-            required
-            rows={8}
-            className="rounded-xl border p-4"
-          />
+          <textarea name="ingredients" required placeholder="Ingredients" rows={8} className="rounded-xl border p-4" />
 
-          <textarea
-            name="method"
-            placeholder="Method"
-            required
-            rows={8}
-            className="rounded-xl border p-4"
-          />
+          <textarea name="method" required placeholder="Method" rows={8} className="rounded-xl border p-4" />
 
-          <input
-            name="image"
-            type="file"
-            accept="image/*"
-            className="rounded-xl border p-4"
-          />
+          <input name="image" type="file" accept="image/*" className="rounded-xl border p-4" />
 
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             <input name="calories" type="number" placeholder="Calories" className="rounded-xl border p-4" />
