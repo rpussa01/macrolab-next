@@ -4,6 +4,7 @@ import Image from "next/image"
 import { Resend } from "resend"
 import { redirect } from "next/navigation"
 
+export const dynamic = "force-dynamic"
 async function sendEnquiry(formData: FormData) {
   "use server"
 

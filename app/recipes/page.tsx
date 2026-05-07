@@ -2,6 +2,8 @@ import Link from "next/link"
 import Image from "next/image"
 import { prisma } from "../../lib/prisma"
 
+export const dynamic = "force-dynamic"
+
 export default async function RecipesPage() {
   const recipes = await prisma.recipe.findMany({
     orderBy: {
