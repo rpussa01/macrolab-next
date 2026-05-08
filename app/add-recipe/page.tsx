@@ -3,6 +3,7 @@ import { redirect } from "next/navigation"
 import { cookies } from "next/headers"
 import { v2 as cloudinary } from "cloudinary"
 
+
 export const dynamic = "force-dynamic"
 
 cloudinary.config({
@@ -70,7 +71,9 @@ export default async function AddRecipePage() {
   }
 
   return (
+    
     <main className="min-h-screen bg-[#eef2f4] px-6 py-16">
+    
       <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-8 shadow-xl">
         <p className="text-xs font-black uppercase tracking-[0.28em] text-[#08789b]">
           MacroLab Admin

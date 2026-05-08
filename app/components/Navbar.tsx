@@ -33,9 +33,7 @@ export default function Navbar() {
           <Link className="transition hover:text-[#08789b]" href="/order">
             Order
           </Link>
-          <Link className="transition hover:text-[#08789b]" href="/admin-login">
-            Admin Login
-          </Link>
+          
         </div>
 
         {/* MOBILE BUTTON */}
