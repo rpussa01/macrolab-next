@@ -15,11 +15,22 @@ async function login(formData: FormData) {
       email,
       password,
     },
+    
   })
 
   if (!admin) {
+    console.log("DATABASE ADMIN:", admin);
+
+console.log("FORM EMAIL:", email);
+
+console.log("FORM PASSWORD:", password);
     redirect("/admin-login?error=true")
   }
+  console.log("DATABASE ADMIN:", admin);
+
+console.log("FORM EMAIL:", email);
+
+console.log("FORM PASSWORD:", password);
 
   const cookieStore = await cookies()
 

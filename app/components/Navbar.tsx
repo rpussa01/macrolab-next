@@ -14,6 +14,7 @@ export default function Navbar() {
           <div className="text-2xl font-black tracking-[-0.06em] text-[#101010] md:text-3xl">
             MacroLab
           </div>
+
           <div className="mt-1 text-[10px] font-black uppercase tracking-[0.32em] text-[#08789b] md:text-xs">
             Performance Nutrition
           </div>
@@ -24,16 +25,22 @@ export default function Navbar() {
           <Link className="transition hover:text-[#08789b]" href="/">
             Home
           </Link>
+
           <Link className="transition hover:text-[#08789b]" href="/recipes">
             Recipes
           </Link>
+
+          <Link className="transition hover:text-[#08789b]" href="/training">
+            Training
+          </Link>
+
           <Link className="transition hover:text-[#08789b]" href="/#about">
             About
           </Link>
+
           <Link className="transition hover:text-[#08789b]" href="/order">
             Order
           </Link>
-          
         </div>
 
         {/* MOBILE BUTTON */}
@@ -52,15 +59,23 @@ export default function Navbar() {
             <Link href="/" onClick={() => setOpen(false)}>
               Home
             </Link>
+
             <Link href="/recipes" onClick={() => setOpen(false)}>
               Recipes
             </Link>
+
+            <Link href="/training" onClick={() => setOpen(false)}>
+              Training
+            </Link>
+
             <Link href="/#about" onClick={() => setOpen(false)}>
               About
             </Link>
+
             <Link href="/order" onClick={() => setOpen(false)}>
               Order
             </Link>
+
             <Link href="/admin-login" onClick={() => setOpen(false)}>
               Admin Login
             </Link>

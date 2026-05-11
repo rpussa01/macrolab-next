@@ -1,100 +1,91 @@
-import Link from "next/link"
-import Image from "next/image"
-import { prisma } from "../../lib/prisma"
-
-export const dynamic = "force-dynamic"
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 export default async function RecipesPage() {
   const recipes = await prisma.recipe.findMany({
-    orderBy: {
-      id: "asc",
-    },
-  })
+    where: { isPublished: true },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
-    <main className="min-h-screen bg-[#eef2f4] px-6 py-16 text-[#101010]">
-      <section className="mx-auto max-w-7xl">
-        <div className="mb-12">
-          <p className="text-xs font-black uppercase tracking-[0.3em] text-[#08789b]">
-            MacroLab Recipes
-          </p>
+    <main className="min-h-screen bg-black px-6 py-12 text-white">
+      <div className="mx-auto max-w-7xl">
+        <h1 className="text-4xl font-bold tracking-tight">
+          MacroLab Recipes
+        </h1>
 
-          <h1 className="mt-3 text-5xl font-black tracking-[-0.06em] md:text-7xl">
-            High Protein.
-            <br />
-            Low Regret.
-          </h1>
+        <p className="mt-3 text-zinc-400">
+          High-protein recipes built for performance.
+        </p>
 
-          <p className="mt-5 max-w-2xl text-lg leading-relaxed text-black/60">
-            Premium chef-built recipes designed for cutting, performance, and
-            clean cravings.
-          </p>
-        </div>
-
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-10 grid gap-6 md:grid-cols-3">
           {recipes.map((recipe) => (
-            <article
+            <Link
               key={recipe.id}
-              className="group overflow-hidden rounded-[2rem] bg-white shadow-xl transition duration-300 hover:-translate-y-2 hover:shadow-2xl"
+              href={`/recipes/${recipe.slug}`}
+              className="overflow-hidden rounded-3xl border border-zinc-800 bg-[#111111] transition duration-300 hover:border-lime-400 hover:shadow-2xl hover:shadow-lime-500/10"
             >
-              <div className="relative h-72 overflow-hidden bg-[#2b1008]">
-                {recipe.image ? (
-                  <Image
-                    src={recipe.image}
+              {recipe.imageUrl ? (
+                <div className="bg-black p-3">
+                  <img
+                    src={recipe.imageUrl}
                     alt={recipe.title}
-                    fill
-                    className="object-cover transition duration-500 group-hover:scale-110"
+                    className="max-h-[500px] w-full rounded-2xl object-contain"
                   />
-                ) : (
-                  <div className="grid h-full place-items-center text-7xl">
-                    🍽️
-                  </div>
-                )}
-              </div>
+                </div>
+              ) : (
+                <div className="flex h-72 items-center justify-center bg-zinc-900 text-zinc-500">
+                  No image
+                </div>
+              )}
 
               <div className="p-6">
-                <p className="text-xs font-black uppercase tracking-[0.22em] text-[#08789b]">
-                  High Protein Recipe
-                </p>
-
-                <h2 className="mt-3 text-3xl font-black tracking-[-0.05em]">
+                <h2 className="text-2xl font-semibold">
                   {recipe.title}
                 </h2>
 
-                <p className="mt-3 line-clamp-3 text-sm leading-relaxed text-black/60">
+                <p className="mt-3 line-clamp-2 text-zinc-400">
                   {recipe.description}
                 </p>
 
                 <div className="mt-6 grid grid-cols-4 gap-2 text-center">
-                  <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>{recipe.calories}</strong>
-                    <p className="text-xs text-black/50">kcal</p>
+                  <div className="rounded-xl bg-black p-3">
+                    <p className="text-xs text-zinc-500">Cal</p>
+                    <p className="font-semibold">
+                      {recipe.calories}
+                    </p>
                   </div>
-                  <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>{recipe.protein}</strong>
-                    <p className="text-xs text-black/50">pro</p>
+
+                  <div className="rounded-xl bg-black p-3">
+                    <p className="text-xs text-zinc-500">Protein</p>
+                    <p className="font-semibold">
+                      {recipe.protein}g
+                    </p>
                   </div>
-                  <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>{recipe.carbs}</strong>
-                    <p className="text-xs text-black/50">carb</p>
+
+                  <div className="rounded-xl bg-black p-3">
+                    <p className="text-xs text-zinc-500">Carbs</p>
+                    <p className="font-semibold">
+                      {recipe.carbs}g
+                    </p>
                   </div>
-                  <div className="rounded-xl bg-[#eef2f4] p-3">
-                    <strong>{recipe.fat}</strong>
-                    <p className="text-xs text-black/50">fat</p>
+
+                  <div className="rounded-xl bg-black p-3">
+                    <p className="text-xs text-zinc-500">Fats</p>
+                    <p className="font-semibold">
+                      {recipe.fats}g
+                    </p>
                   </div>
                 </div>
 
-                <Link
-                  href={`/recipes/${recipe.id}`}
-                  className="mt-6 inline-flex w-full justify-center rounded-full bg-[#08789b] px-6 py-4 text-sm font-black uppercase tracking-[0.18em] text-white transition hover:bg-[#065f79]"
-                >
-                  View Recipe
-                </Link>
+                <p className="mt-6 font-semibold text-lime-400">
+                  View recipe →
+                </p>
               </div>
-            </article>
+            </Link>
           ))}
         </div>
-      </section>
+      </div>
     </main>
-  )
+  );
 }

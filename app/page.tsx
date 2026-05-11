@@ -1,13 +1,11 @@
-import Link from "next/link"
-import Image from "next/image"
-import { prisma } from "../lib/prisma"
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
 
 export default async function MacroLabHome() {
   const featuredRecipe = await prisma.recipe.findFirst({
-    orderBy: {
-      id: "asc",
-    },
-  })
+    where: { isPublished: true },
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <main className="min-h-screen bg-[#dfe5e8] text-[#101010]">
@@ -26,7 +24,7 @@ export default async function MacroLabHome() {
           </Link>
         </aside>
 
-        <section className="relative z-20 mx-auto grid min-h-[calc(100vh-140px)] max-w-7xl place-items-center px-6 pb-20 pt-12 md:pt-16 text-center">
+        <section className="relative z-20 mx-auto grid min-h-[calc(100vh-140px)] max-w-7xl place-items-center px-6 pb-20 pt-12 text-center md:pt-16">
           <div className="relative w-full">
             <h2 className="relative z-10 mb-6 text-[18vw] font-black uppercase leading-[0.75] tracking-[-0.08em] text-[#08789b] drop-shadow-[4px_6px_0_rgba(0,0,0,0.1)] md:mb-10 md:text-[9rem] lg:text-[11rem]">
               Healthy Pro
@@ -53,6 +51,7 @@ export default async function MacroLabHome() {
                 <div className="text-5xl font-black uppercase tracking-[-0.08em] md:text-6xl">
                   100% Whey
                 </div>
+
                 <p className="mt-5 max-w-[260px] text-xs font-bold uppercase leading-relaxed tracking-[0.12em] text-white/70">
                   Protein recipes • Macro meals • High protein desserts
                 </p>
@@ -93,6 +92,7 @@ export default async function MacroLabHome() {
                 <p className="text-xs font-black uppercase tracking-[0.28em] text-[#0a83a7]">
                   From the database
                 </p>
+
                 <h2 className="mt-3 text-4xl font-black tracking-[-0.06em] md:text-6xl">
                   Featured Recipe
                 </h2>
@@ -105,23 +105,22 @@ export default async function MacroLabHome() {
 
             <div className="grid gap-8 rounded-[2.5rem] bg-white p-6 shadow-2xl md:grid-cols-[0.9fr_1.1fr] md:p-8">
               <div className="relative min-h-[340px] overflow-hidden rounded-[2rem] bg-[#2b1008] shadow-inner">
-                {featuredRecipe.image ? (
-                  <Image
-                    src={featuredRecipe.image}
+                {featuredRecipe.imageUrl ? (
+                  <img
+                    src={featuredRecipe.imageUrl}
                     alt={featuredRecipe.title}
-                    fill
-                    className="object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
                   <div className="grid h-full place-items-center text-8xl">
-                    🍫
+                    🍽️
                   </div>
                 )}
               </div>
 
               <div className="flex flex-col justify-center p-2 md:p-6">
                 <p className="text-xs font-black uppercase tracking-[0.25em] text-[#08789b]">
-                  High Protein Dessert
+                  High Protein Recipe
                 </p>
 
                 <h3 className="mt-3 text-4xl font-black tracking-[-0.06em] md:text-6xl">
@@ -134,25 +133,36 @@ export default async function MacroLabHome() {
 
                 <div className="mt-8 grid grid-cols-2 gap-4 md:grid-cols-4">
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">{featuredRecipe.calories}</strong>
+                    <strong className="text-2xl">
+                      {featuredRecipe.calories ?? "-"}
+                    </strong>
                     <p className="text-sm text-black/50">kcal</p>
                   </div>
+
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">{featuredRecipe.protein}g</strong>
+                    <strong className="text-2xl">
+                      {featuredRecipe.protein ?? "-"}g
+                    </strong>
                     <p className="text-sm text-black/50">protein</p>
                   </div>
+
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">{featuredRecipe.carbs}g</strong>
+                    <strong className="text-2xl">
+                      {featuredRecipe.carbs ?? "-"}g
+                    </strong>
                     <p className="text-sm text-black/50">carbs</p>
                   </div>
+
                   <div className="rounded-2xl bg-[#e8edf0] p-5">
-                    <strong className="text-2xl">{featuredRecipe.fat}g</strong>
+                    <strong className="text-2xl">
+                      {featuredRecipe.fats ?? "-"}g
+                    </strong>
                     <p className="text-sm text-black/50">fat</p>
                   </div>
                 </div>
 
                 <Link
-                  href={`/recipes/${featuredRecipe.id}`}
+                  href={`/recipes/${featuredRecipe.slug}`}
                   className="mt-8 inline-flex w-fit rounded-full bg-[#08789b] px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-white"
                 >
                   View Full Recipe
@@ -239,5 +249,5 @@ export default async function MacroLabHome() {
         </div>
       </section>
     </main>
-  )
+  );
 }
