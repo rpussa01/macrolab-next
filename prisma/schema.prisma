@@ -7,7 +7,7 @@ datasource db {
 }
 
 model Recipe {
-  id           String   @id @default(cuid())
+  id Int @id @default(autoincrement())
   title        String
   slug         String   @unique
   description  String
