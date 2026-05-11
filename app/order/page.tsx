@@ -82,9 +82,9 @@ export default async function OrderPage() {
                 className="overflow-hidden rounded-[2rem] bg-white shadow-xl transition hover:-translate-y-1"
               >
                 <div className="relative h-[240px] w-full bg-[#dfe5e8]">
-                  {recipe.image ? (
+                  {recipe.imageUrl ? (
                     <Image
-                      src={recipe.image}
+                      src={recipe.imageUrl}
                       alt={recipe.title}
                       fill
                       className="object-cover"
