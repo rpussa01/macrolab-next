@@ -1,114 +1,143 @@
-import { prisma } from "../../lib/prisma"
-import { redirect } from "next/navigation"
-import { cookies } from "next/headers"
-import { v2 as cloudinary } from "cloudinary"
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
+export const dynamic = "force-dynamic";
 
-export const dynamic = "force-dynamic"
-
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-})
-
-async function uploadImage(file: File): Promise<string> {
-  const bytes = await file.arrayBuffer()
-  const buffer = Buffer.from(bytes)
-
-  return new Promise((resolve, reject) => {
-    cloudinary.uploader
-      .upload_stream(
-        {
-          folder: "macrolab-recipes",
-        },
-        (error, result) => {
-          if (error) {
-            reject(error)
-            return
-          }
-
-          resolve(result?.secure_url || "")
-        }
-      )
-      .end(buffer)
-  })
+function slugify(text: string) {
+  return text
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)+/g, "");
 }
 
 async function addRecipe(formData: FormData) {
-  "use server"
+  "use server";
 
-  const imageFile = formData.get("image") as File
-  let imageUrl = ""
+  const title = String(formData.get("title") || "");
+  const description = String(formData.get("description") || "");
+  const imageUrl = String(formData.get("imageUrl") || "");
 
-  if (imageFile && imageFile.size > 0) {
-    imageUrl = await uploadImage(imageFile)
-  }
+  const ingredients = String(
+    formData.get("ingredients") || ""
+  )
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const method = String(
+    formData.get("method") || ""
+  )
+    .split("\n")
+    .map((step) => step.trim())
+    .filter(Boolean);
 
   await prisma.recipe.create({
     data: {
-      title: String(formData.get("title") || ""),
-      description: String(formData.get("description") || ""),
-      ingredients: String(formData.get("ingredients") || ""),
-      method: String(formData.get("method") || ""),
-      image: imageUrl,
+      title,
+      slug: slugify(title),
+      description,
+      ingredients,
+      method,
+      imageUrl,
+
       calories: Number(formData.get("calories") || 0),
       protein: Number(formData.get("protein") || 0),
       carbs: Number(formData.get("carbs") || 0),
-      fat: Number(formData.get("fat") || 0),
-    },
-  })
+      fats: Number(formData.get("fats") || 0),
 
-  redirect("/manage-recipe")
+      isPublished: true,
+    },
+  });
+
+  redirect("/recipes");
 }
 
-export default async function AddRecipePage() {
-  const cookieStore = await cookies()
-  const isAdmin = cookieStore.get("admin-auth")?.value === "true"
-
-  if (!isAdmin) {
-    redirect("/admin-login")
-  }
-
+export default function AddRecipePage() {
   return (
-    
-    <main className="min-h-screen bg-[#eef2f4] px-6 py-16">
-    
-      <div className="mx-auto max-w-3xl rounded-[2rem] bg-white p-8 shadow-xl">
+    <main className="min-h-screen bg-[#eef2f4] px-6 py-20 text-[#101010]">
+      <section className="mx-auto max-w-3xl rounded-[2rem] bg-white p-10 shadow-2xl">
         <p className="text-xs font-black uppercase tracking-[0.28em] text-[#08789b]">
           MacroLab Admin
         </p>
 
-        <h1 className="mt-3 text-5xl font-black tracking-[-0.06em]">
+        <h1 className="mt-4 text-5xl font-black tracking-[-0.08em]">
           Add Recipe
         </h1>
 
         <form action={addRecipe} className="mt-10 grid gap-5">
-          <input name="title" required placeholder="Recipe title" className="rounded-xl border p-4" />
+          <input
+            name="title"
+            required
+            placeholder="Recipe title"
+            className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
+          />
 
-          <textarea name="description" required placeholder="Short description" className="rounded-xl border p-4" />
+          <textarea
+            name="description"
+            required
+            placeholder="Recipe description"
+            className="min-h-28 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
+          />
 
-          <textarea name="ingredients" required placeholder="Ingredients" rows={8} className="rounded-xl border p-4" />
+          <input
+            name="imageUrl"
+            placeholder="Cloudinary image URL"
+            className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
+          />
 
-          <textarea name="method" required placeholder="Method" rows={8} className="rounded-xl border p-4" />
+          <textarea
+            name="ingredients"
+            required
+            placeholder="Ingredients — one per line"
+            className="min-h-40 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
+          />
 
-          <input name="image" type="file" accept="image/*" className="rounded-xl border p-4" />
+          <textarea
+            name="method"
+            required
+            placeholder="Method — one step per line"
+            className="min-h-40 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
+          />
 
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <input name="calories" type="number" placeholder="Calories" className="rounded-xl border p-4" />
-            <input name="protein" type="number" placeholder="Protein" className="rounded-xl border p-4" />
-            <input name="carbs" type="number" placeholder="Carbs" className="rounded-xl border p-4" />
-            <input name="fat" type="number" placeholder="Fat" className="rounded-xl border p-4" />
+          <div className="grid gap-4 md:grid-cols-4">
+            <input
+              name="calories"
+              type="number"
+              placeholder="Calories"
+              className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
+            />
+
+            <input
+              name="protein"
+              type="number"
+              placeholder="Protein"
+              className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
+            />
+
+            <input
+              name="carbs"
+              type="number"
+              placeholder="Carbs"
+              className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
+            />
+
+            <input
+              name="fats"
+              type="number"
+              placeholder="Fats"
+              className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
+            />
           </div>
 
           <button
             type="submit"
-            className="rounded-full bg-[#08789b] px-8 py-4 text-sm font-black uppercase tracking-[0.18em] text-white"
+            className="mt-4 rounded-full bg-[#08789b] px-8 py-4 text-sm font-black uppercase tracking-[0.22em] text-white"
           >
             Save Recipe
           </button>
         </form>
-      </div>
+      </section>
     </main>
-  )
+  );
 }
