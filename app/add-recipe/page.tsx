@@ -1,36 +1,32 @@
-import { prisma } from "@/lib/prisma";
-import { redirect } from "next/navigation";
+import { prisma } from "@/lib/prisma"
+import { redirect } from "next/navigation"
 
-export const dynamic = "force-dynamic";
+export const dynamic = "force-dynamic"
 
 function slugify(text: string) {
   return text
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)+/g, "");
+    .replace(/(^-|-$)+/g, "")
 }
 
 async function addRecipe(formData: FormData) {
-  "use server";
+  "use server"
 
-  const title = String(formData.get("title") || "");
-  const description = String(formData.get("description") || "");
-  const imageUrl = String(formData.get("imageUrl") || "");
+  const title = String(formData.get("title") || "")
+  const description = String(formData.get("description") || "")
+  const imageUrl = String(formData.get("imageUrl") || "")
 
-  const ingredients = String(
-    formData.get("ingredients") || ""
-  )
+  const ingredients = String(formData.get("ingredients") || "")
     .split("\n")
     .map((item) => item.trim())
-    .filter(Boolean);
+    .filter(Boolean)
 
-  const method = String(
-    formData.get("method") || ""
-  )
+  const method = String(formData.get("method") || "")
     .split("\n")
     .map((step) => step.trim())
-    .filter(Boolean);
+    .filter(Boolean)
 
   await prisma.recipe.create({
     data: {
@@ -40,17 +36,15 @@ async function addRecipe(formData: FormData) {
       ingredients,
       method,
       imageUrl,
-
       calories: Number(formData.get("calories") || 0),
       protein: Number(formData.get("protein") || 0),
       carbs: Number(formData.get("carbs") || 0),
       fats: Number(formData.get("fats") || 0),
-
       isPublished: true,
     },
-  });
+  })
 
-  redirect("/recipes");
+  redirect("/recipes")
 }
 
 export default function AddRecipePage() {
@@ -139,5 +133,5 @@ export default function AddRecipePage() {
         </form>
       </section>
     </main>
-  );
+  )
 }
