@@ -7,21 +7,20 @@ datasource db {
 }
 
 model Recipe {
-  id          String   @id @default(cuid())
-  slug        String   @unique
-  title       String
-  description String
-  calories    Int?
-  protein     Int?
-  carbs       Int?
-  fats        Int?
-  ingredients String[]
-  method      String[]
-  imageUrl    String?
-  publicId    String?
-  isPublished Boolean  @default(true)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String   @id @default(cuid())
+  title        String
+  slug         String   @unique
+  description  String
+  ingredients  String[]
+  method       String[]
+  imageUrl     String?
+  calories     Int?
+  protein      Int?
+  carbs        Int?
+  fats         Int?
+  fat          Int?
+  isPublished  Boolean  @default(true)
+  createdAt    DateTime @default(now())
 }
 
 model TrainingProgram {
