@@ -1,29 +1,37 @@
-import { prisma } from "@/lib/prisma"
-import { redirect } from "next/navigation"
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
 
-export const dynamic = "force-dynamic"
+export const dynamic = "force-dynamic";
 
 async function updateRecipe(id: string, formData: FormData) {
-  "use server"
+  "use server";
 
-  const imageUrl = String(formData.get("imageUrl") || "")
+  const title = String(formData.get("title") || "");
+  const description = String(formData.get("description") || "");
+  const imageUrl = String(formData.get("imageUrl") || "");
+
+  const ingredients = String(
+    formData.get("ingredients") || ""
+  )
+    .split("\n")
+    .map((item) => item.trim())
+    .filter(Boolean);
+
+  const method = String(
+    formData.get("method") || ""
+  )
+    .split("\n")
+    .map((step) => step.trim())
+    .filter(Boolean);
 
   await prisma.recipe.update({
     where: { id },
+
     data: {
-      title: String(formData.get("title") || ""),
-      description: String(formData.get("description") || ""),
-
-      ingredients: String(formData.get("ingredients") || "")
-        .split("\n")
-        .map((item) => item.trim())
-        .filter(Boolean),
-
-      method: String(formData.get("method") || "")
-        .split("\n")
-        .map((step) => step.trim())
-        .filter(Boolean),
-
+      title,
+      description,
+      ingredients,
+      method,
       imageUrl,
 
       calories: Number(formData.get("calories") || 0),
@@ -31,24 +39,24 @@ async function updateRecipe(id: string, formData: FormData) {
       carbs: Number(formData.get("carbs") || 0),
       fats: Number(formData.get("fats") || 0),
     },
-  })
+  });
 
-  redirect("/manage-recipe")
+  redirect("/manage-recipe");
 }
 
 export default async function EditRecipePage({
   params,
 }: {
-  params: Promise<{ id: string }>
+  params: Promise<{ id: string }>;
 }) {
-  const { id } = await params
+  const { id } = await params;
 
   const recipe = await prisma.recipe.findUnique({
     where: { id },
-  })
+  });
 
   if (!recipe) {
-    redirect("/manage-recipe")
+    redirect("/manage-recipe");
   }
 
   return (
@@ -62,19 +70,22 @@ export default async function EditRecipePage({
           Edit Recipe
         </h1>
 
-        <form action={updateRecipe.bind(null, recipe.id)} className="mt-10 grid gap-5">
+        <form
+          action={updateRecipe.bind(null, recipe.id)}
+          className="mt-10 grid gap-5"
+        >
           <input
             name="title"
-            defaultValue={recipe.title}
             required
+            defaultValue={recipe.title}
             placeholder="Recipe title"
             className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
           />
 
           <textarea
             name="description"
-            defaultValue={recipe.description}
             required
+            defaultValue={recipe.description}
             placeholder="Recipe description"
             className="min-h-28 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
           />
@@ -88,16 +99,16 @@ export default async function EditRecipePage({
 
           <textarea
             name="ingredients"
-            defaultValue={recipe.ingredients.join("\n")}
             required
+            defaultValue={recipe.ingredients.join("\n")}
             placeholder="Ingredients — one per line"
             className="min-h-40 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
           />
 
           <textarea
             name="method"
-            defaultValue={recipe.method.join("\n")}
             required
+            defaultValue={recipe.method.join("\n")}
             placeholder="Method — one step per line"
             className="min-h-40 rounded-2xl border border-black/10 bg-[#f7f7f7] px-5 py-4"
           />
@@ -106,7 +117,7 @@ export default async function EditRecipePage({
             <input
               name="calories"
               type="number"
-              defaultValue={recipe.calories || 0}
+              defaultValue={recipe.calories}
               placeholder="Calories"
               className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
             />
@@ -114,7 +125,7 @@ export default async function EditRecipePage({
             <input
               name="protein"
               type="number"
-              defaultValue={recipe.protein || 0}
+              defaultValue={recipe.protein}
               placeholder="Protein"
               className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
             />
@@ -122,7 +133,7 @@ export default async function EditRecipePage({
             <input
               name="carbs"
               type="number"
-              defaultValue={recipe.carbs || 0}
+              defaultValue={recipe.carbs}
               placeholder="Carbs"
               className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
             />
@@ -130,7 +141,7 @@ export default async function EditRecipePage({
             <input
               name="fats"
               type="number"
-              defaultValue={recipe.fats || 0}
+              defaultValue={recipe.fats}
               placeholder="Fats"
               className="rounded-2xl border border-black/10 bg-[#f7f7f7] px-4 py-3"
             />
@@ -145,5 +156,5 @@ export default async function EditRecipePage({
         </form>
       </section>
     </main>
-  )
+  );
 }
