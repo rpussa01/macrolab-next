@@ -3,13 +3,11 @@
 import Link from "next/link";
 import { useState } from "react";
 
-type Mode = "create" | "crud";
-type ContentType = "recipe" | "training";
+type Mode = "recipe" | "training" | "crud";
 
 export default function OpenAICommandLinePage() {
   const [command, setCommand] = useState("");
-  const [type, setType] = useState<ContentType>("recipe");
-  const [mode, setMode] = useState<Mode>("create");
+  const [mode, setMode] = useState<Mode>("recipe");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
   const [resultUrl, setResultUrl] = useState("");
@@ -21,23 +19,22 @@ export default function OpenAICommandLinePage() {
       setResultUrl("");
 
       const endpoint =
-        mode === "crud"
-          ? "/api/openaicommandline"
-          : type === "recipe"
+        mode === "recipe"
           ? "/api/recipe-ai"
-          : "/api/training-ai";
-
-      const body =
-        mode === "crud"
-          ? { command, type }
-          : { command };
+          : mode === "training"
+          ? "/api/training-ai"
+          : "/api/openaicommandline";
 
       const res = await fetch(endpoint, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          command,
+          type: mode,
+          mode,
+        }),
       });
 
       const data = await res.json();
@@ -48,45 +45,18 @@ export default function OpenAICommandLinePage() {
       }
 
       setCommand("");
+      setMessage(data.message || "Command completed successfully.");
 
-      if (mode === "create" && type === "recipe") {
-        setMessage(
-          "Recipe created, AI image uploaded to Cloudinary, and saved to database."
-        );
+      const slug =
+        data.recipe?.slug ||
+        data.program?.slug ||
+        data.item?.slug ||
+        data.savedRecipe?.slug ||
+        data.savedProgram?.slug;
 
-        const slug =
-          data.recipe?.slug ||
-          data.item?.slug ||
-          data.savedRecipe?.slug;
-
-        if (slug) {
-          setResultUrl(`/recipes/${slug}`);
-        }
-      }
-
-      if (mode === "create" && type === "training") {
-        setMessage("Training program created and saved to database.");
-
-        const slug =
-          data.program?.slug ||
-          data.item?.slug ||
-          data.savedProgram?.slug;
-
-        if (slug) {
-          setResultUrl(`/training/${slug}`);
-        }
-      }
-
-      if (mode === "crud") {
-        setMessage(data.message || "CRUD command completed successfully.");
-
-        if (data.item?.slug) {
-          setResultUrl(
-            type === "recipe"
-              ? `/recipes/${data.item.slug}`
-              : `/training/${data.item.slug}`
-          );
-        }
+      if (slug) {
+        if (mode === "recipe") setResultUrl(`/recipes/${slug}`);
+        if (mode === "training") setResultUrl(`/training/${slug}`);
       }
     } catch (error) {
       console.error(error);
@@ -126,60 +96,40 @@ export default function OpenAICommandLinePage() {
             </h1>
 
             <p className="mt-4 max-w-2xl text-lg leading-relaxed text-white/80">
-              Create recipes with AI images, build training programs,
-              and run safe database CRUD commands from one admin panel.
+              Create recipes, create training programs, or run CRUD commands
+              against existing MacroLab content.
             </p>
           </div>
 
           <div className="p-8">
-            <div className="grid gap-6 md:grid-cols-2">
-              <div>
-                <label className="mb-3 block text-xs font-black uppercase tracking-[0.22em] text-white/60">
-                  Mode
-                </label>
+            <label className="mb-3 block text-xs font-black uppercase tracking-[0.22em] text-white/60">
+              Command Mode
+            </label>
 
-                <select
-                  value={mode}
-                  onChange={(e) => setMode(e.target.value as Mode)}
-                  className="w-full rounded-2xl border border-white/10 bg-black px-5 py-4 text-white outline-none transition focus:border-[#08789b]"
-                >
-                  <option value="create">Create with AI</option>
-                  <option value="crud">CRUD existing item</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="mb-3 block text-xs font-black uppercase tracking-[0.22em] text-white/60">
-                  Content Type
-                </label>
-
-                <select
-                  value={type}
-                  onChange={(e) => setType(e.target.value as ContentType)}
-                  className="w-full rounded-2xl border border-white/10 bg-black px-5 py-4 text-white outline-none transition focus:border-[#08789b]"
-                >
-                  <option value="recipe">Recipe</option>
-                  <option value="training">Training Program</option>
-                </select>
-              </div>
-            </div>
+            <select
+              value={mode}
+              onChange={(e) => setMode(e.target.value as Mode)}
+              className="w-full rounded-2xl border border-white/10 bg-black px-5 py-4 text-white outline-none transition focus:border-[#08789b]"
+            >
+              <option value="recipe">Create Recipe + AI Image</option>
+              <option value="training">Create Training Program</option>
+              <option value="crud">CRUD Existing Content</option>
+            </select>
 
             <div className="mt-8">
               <label className="mb-3 block text-xs font-black uppercase tracking-[0.22em] text-white/60">
-                Command
+                AI Command
               </label>
 
               <textarea
                 value={command}
                 onChange={(e) => setCommand(e.target.value)}
                 placeholder={
-                  mode === "create" && type === "recipe"
-                    ? "Create a MacroLab high-protein chocolate oats bowl with whey, banana, YoPRO and berries. Generate a cinematic food photo with black background and upload it to Cloudinary."
-                    : mode === "create" && type === "training"
-                    ? "Build a 5 day fat-loss hypertrophy program for Rasika with upper/lower split and do not publish publicly."
-                    : type === "recipe"
-                    ? "update high-protein-oats-bowl protein to 45 OR delete high-protein-oats-bowl"
-                    : "update ladies-glutes-hamstrings-growth-program for 5 days OR delete ladies-glutes-hamstrings-growth-program"
+                  mode === "recipe"
+                    ? "Create a MacroLab high-protein chocolate oats bowl with whey, banana, YoPRO and berries. Generate a cinematic food photo and upload it to Cloudinary."
+                    : mode === "training"
+                    ? "Create a public training program called My Current Push Pull Split with 5 days of hypertrophy training."
+                    : 'Delete recipe "macro-lab-vanilla-blueberry-protein-muffins" or update training "my-current-push-pull-split" duration to 6 weeks.'
                 }
                 className="min-h-[260px] w-full rounded-[2rem] border border-white/10 bg-black p-6 text-lg text-white outline-none transition focus:border-lime-400"
               />
@@ -195,9 +145,7 @@ export default function OpenAICommandLinePage() {
 
             {message && (
               <div className="mt-8 rounded-[2rem] border border-white/10 bg-black/60 p-6">
-                <p className="text-lg font-semibold text-white">
-                  {message}
-                </p>
+                <p className="text-lg font-semibold text-white">{message}</p>
 
                 {resultUrl && (
                   <a
@@ -217,21 +165,20 @@ export default function OpenAICommandLinePage() {
 
               <div className="mt-6 grid gap-4">
                 <div className="rounded-2xl bg-white/5 p-5 text-sm text-white/80">
-                  Create mode + Recipe: Create a MacroLab high-protein tiramisu
-                  overnight oats recipe with cinematic black-background food photography.
+                  Create Recipe: Create a MacroLab high-protein tiramisu
+                  overnight oats recipe with cinematic black-background food
+                  photography.
                 </div>
 
                 <div className="rounded-2xl bg-white/5 p-5 text-sm text-white/80">
-                  Create mode + Training: Build a 6-day aesthetic hypertrophy
-                  program and keep it unpublished from public listings.
+                  Create Training Program: Create a 6-day aesthetic hypertrophy
+                  program and publish it publicly.
                 </div>
 
                 <div className="rounded-2xl bg-white/5 p-5 text-sm text-white/80">
-                  CRUD mode + Recipe: update high-protein-oats-bowl protein to 45
-                </div>
-
-                <div className="rounded-2xl bg-white/5 p-5 text-sm text-white/80">
-                  CRUD mode + Training: delete ladies-glutes-hamstrings-growth-program
+                  CRUD: Delete recipe "macro-lab-high-protein-lava-cake" or
+                  update training "my-current-push-pull-split" duration to 6
+                  weeks.
                 </div>
               </div>
             </div>
